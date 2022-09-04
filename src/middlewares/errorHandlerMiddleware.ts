@@ -10,5 +10,9 @@ export default function errorHandler (error: any, req: Request, res: Response, n
     return res.status(400).send(error.message)
   }
 
+  if(error.type === "error_conflict") {
+    return res.status(409).send(error.message)
+  }
+  
   res.sendStatus(500); // internal server error
 }

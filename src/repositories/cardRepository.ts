@@ -1,5 +1,5 @@
-import { connection } from "../config/database.js";
-import { mapObjectToUpdateQuery } from "../utils/sqlUtil.js"
+import { connection } from "../config/database"
+//import { mapObjectToUpdateQuery } from "../utils/sqlUtil"
 
 export type TransactionTypes =
   | "groceries"
@@ -102,23 +102,32 @@ export async function insert(cardData: CardInsertData) {
   );
 }
 
-export async function update(id: number, cardData: CardUpdateData) {
-  const { objectColumns: cardColumns, objectValues: cardValues } =
-    mapObjectToUpdateQuery({
-      object: cardData,
-      offset: 2,
-    });
-
-  connection.query(
-    `
-    UPDATE cards
-      SET ${cardColumns}
-    WHERE $1=id
-  `,
-    [id, ...cardValues]
-  );
-}
+//export async function update(id: number, cardData: CardUpdateData) {
+//const { objectColumns: cardColumns, objectValues: cardValues } =
+//  mapObjectToUpdateQuery({
+//    object: cardData,
+//    offset: 2,
+//  });
+//connection.query(
+//  `
+//  UPDATE cards
+//    SET ${cardColumns}
+//  WHERE $1=id
+//`,
+//  [id, ...cardValues]
+//);
+//}
 
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);
+}
+
+export default{
+  find,
+  findById,
+  findByTypeAndEmployeeId,
+  findByCardDetails,
+  insert,
+  //update,
+  remove
 }
