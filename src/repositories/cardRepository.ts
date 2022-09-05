@@ -122,13 +122,25 @@ export async function updatePassword(id: number, password: string) {
 await connection.query(
   `
   UPDATE cards
-    SET password ='${password}'
+    SET password ='${password}', 
+    "isBlocked" = false
   WHERE $1=id
 `,
   [id]
 );
 }
 
+export async function updateBlockedStatus(id: number, isBlocked: boolean) {
+  await connection.query(
+    `
+    UPDATE cards
+      SET "isBlocked" = ${isBlocked}
+    WHERE $1=id
+  `,
+    [id]
+  );
+  }
+  
 
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);

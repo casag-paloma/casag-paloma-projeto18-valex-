@@ -150,3 +150,21 @@ return encryptPassword;
 export async function activeCard(id:number, password:string) {
     await cardRepository.updatePassword(id,password)
 }
+
+export async function verifyCardBlockedStatus(card: cardRepository.CardInsertData) {
+    console.log(card);
+    if(card.isBlocked) throw {type: "error_conflict",
+    message: `This card is already blocked!`}
+}
+
+export async function verifyPassword(password: string, encryptedPassword: any) {  
+    console.log(password, encryptedPassword);
+    if (!bcrypt.compareSync(password, encryptedPassword)) throw {
+		type: "error_bad_request",
+		message: `invalid request!`
+	}
+};
+
+export async function blockCard(id:number, isBlocked:boolean) {
+    await cardRepository.updateBlockedStatus(id,isBlocked);
+}

@@ -1,5 +1,6 @@
 import cardSchema from "../schemas/cardSchema";
 import activeCardSchema from "../schemas/activeCardSchema";
+import blockCardSchema from "../schemas/blockCardSchema";
 
 function notFoundError(entity:string) {
 	return {
@@ -23,6 +24,18 @@ export async function validadeCardType(type:string) {
 export async function validadeActiveCard(data:{}) {
     
     const {error} =  activeCardSchema.validate(data);
+    console.log(error)
+    if(error) throw {
+		type: "error_bad_request",
+		message: `invalid request!`
+	} 
+
+}
+
+
+export async function validadeBlockStatusCard(data:{}) {
+    
+    const {error} =  blockCardSchema.validate(data);
     console.log(error)
     if(error) throw {
 		type: "error_bad_request",

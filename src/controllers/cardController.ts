@@ -40,3 +40,17 @@ export async function activateCard(req:Request, res: Response) {
     res.sendStatus(200);
     
 }
+
+export async function blockCard(req:Request, res: Response){
+    const data = req.body;
+
+    await cardMiddleware.validadeBlockStatusCard(data);
+    const {id, password} = data;
+    
+    const card = await cardService.verifyCardById(id);
+    await cardService.verifyExpirationDate(card.expirationDate);
+    await cardService.verifyCardBlockedStatus(card);
+    await cardService.verifyPassword(password, card.password)
+    await cardService.blockCard(id,true);
+    res.sendStatus(200)
+}
