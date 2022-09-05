@@ -1,7 +1,8 @@
 import {Request, Response} from "express";
 import { validadePurchase } from "../middlewares/purchaseValidationMiddleware";
 import * as cardService from "../services/cardService";
-import * as purchaseService from "../services/purchaseService"
+import * as purchaseService from "../services/purchaseService";
+import * as rechargeService from "../services/rechargeService";
 
 export async function addPurchase(req:Request, res:Response) {
     const data = req.body
@@ -20,8 +21,17 @@ export async function addPurchase(req:Request, res:Response) {
     
     await purchaseService.verifyBusinessType(business.type, card.type);
 
-    //await rechargeService.addRecharge(data.cardId, data.amount);
+    const rechargeData = await rechargeService.getRecharges(cardId);
+    const purchaseData = await purchaseService.getPurchases(cardId);
+    console.log(rechargeData, purchaseData)
+    const rechargeValues = await rechargeService.getRechargeValues(rechargeData);
+    const purchaseValues = await purchaseService.getPurchaseValues(purchaseData);
+    console.log(rechargeValues, purchaseValues);
+    const balance = await cardService.getBalance(rechargeValues,purchaseValues);
+
+    await purchaseService.isPurchaseAllow(balance, amount);
+    
+    await purchaseService.addPurchase(cardId, businessId, amount);
 
     res.sendStatus(201);
-    
 }
