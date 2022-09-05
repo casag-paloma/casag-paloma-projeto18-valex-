@@ -7,11 +7,9 @@ import * as rechargeService from "../services/rechargeService";
 export async function createCard(req:Request, res: Response) {
 
     const {authorization} = req.headers;
-    console.log(authorization);
     const apiKey = authorization?.split('-')[0]
-    console.log(apiKey)
     const data = req.body;
-    
+
     await cardMiddleware.validadeCardType(data);
     await cardService.verifyApiKey(apiKey);
     const {employeeId, type} = data;
@@ -22,29 +20,31 @@ export async function createCard(req:Request, res: Response) {
     const cardInfo = await cardService.generateCardInfo(employeeId, type, employeeFullName);
     await cardService.createCard(cardInfo);
 
-    res.status(201).send('aqui');
+    res.sendStatus(201);
     
 }
 
 export async function activateCard(req:Request, res: Response) {
+    const {cardId} = req.params;
+    await cardMiddleware.validateCardId(cardId);
     const data = req.body;
-
     await cardMiddleware.validadeActiveCard(data);
-    const {id, securityCode, password} = data;
+    const {securityCode, password} = data;
     
-    const card = await cardService.verifyCardById(id);
+    const card = await cardService.verifyCardById(Number(cardId));
     await cardService.verifyExpirationDate(card.expirationDate);
     await cardService.verifyCardActiveStatus(card, false);
     await cardService.verifySecurityCode(securityCode, card.securityCode)
     
     const encryptPassword = await cardService.encryptPassword(password);
-    await cardService.activeCard(id, encryptPassword);
+    await cardService.activeCard(Number(cardId), encryptPassword);
     res.sendStatus(200);
     
 }
 
-export async function verificationBlockStatusFunctions(data:any, doIwannaBlock:boolean) {
+export async function verificationBlockStatusFunctions(cardId:string, data:any, doIwannaBlock:boolean) {
 
+    await cardMiddleware.validateCardId(cardId);
     await cardMiddleware.validadeBlockStatusCard(data);
     const card = await cardService.verifyCardById(data.id);
     await cardService.verifyExpirationDate(card.expirationDate);
@@ -55,16 +55,18 @@ export async function verificationBlockStatusFunctions(data:any, doIwannaBlock:b
 
 export async function blockCard(req:Request, res: Response){
     const data = req.body;
+    const {cardId} = req.params;
 
-    await verificationBlockStatusFunctions(data,true);
+    await verificationBlockStatusFunctions(cardId, data,true);
     await cardService.changeBlockStatusCard(data.id,true);
     res.sendStatus(200)
 }
 
 export async function unblockCard(req:Request, res: Response){
     const data = req.body;
+    const {cardId} = req.params;
 
-    await verificationBlockStatusFunctions(data,false);
+    await verificationBlockStatusFunctions(cardId,data,false);
     await cardService.changeBlockStatusCard(data.id,false);
     res.sendStatus(200)
 }
@@ -73,13 +75,11 @@ export async function getBalance(req:Request, res: Response) {
 
     const {cardId} = req.params;
     await cardMiddleware.validateCardId(cardId);
-    const numberCardId = Number(cardId);
-    const rechargeData = await rechargeService.getRecharges(numberCardId);
-    const purchaseData = await purchaseService.getPurchases(numberCardId);
-    console.log(rechargeData, purchaseData)
+    
+    const rechargeData = await rechargeService.getRecharges(Number(cardId));
+    const purchaseData = await purchaseService.getPurchases(Number(cardId));
     const rechargeValues = await rechargeService.getRechargeValues(rechargeData);
     const purchaseValues = await purchaseService.getPurchaseValues(purchaseData);
-    console.log(rechargeValues, purchaseValues);
     const balance = await cardService.getBalance(rechargeValues,purchaseValues);
     const result = await cardService.generateBalanceResponse(balance, rechargeData, purchaseData);
 

@@ -8,7 +8,6 @@ export async function verifyBusinessById(id:number) {
 
     if(!business) throw {type: "error_not_found",
     message: `Could not find specified business!`}
-    console.log(business);
     return business;
 }
 
@@ -25,16 +24,13 @@ export async function getPurchases(cardId:number) {
 
 async function getPurchaseArrayValues(purchaseData:[paymentRepository.Payment]) {
     const purchaseArrayValues = purchaseData.map(({amount}) => amount)
-    console.log(purchaseArrayValues);
     const purchaseValues = purchaseArrayValues.reduce(function(acc, cur) {
         return acc + cur;
     });
-    console.log(purchaseValues);
     return purchaseValues;
 }
 
 export async function getPurchaseValues(purchaseData:any) {
-    console.log(purchaseData, purchaseData.length)
     if(purchaseData.length > 0){
         const purchaseValues =getPurchaseArrayValues(purchaseData);
         return purchaseValues;
@@ -59,5 +55,5 @@ export async function addPurchase( cardId:number, businessId:number, amount:numb
     }
 
     await paymentRepository.insert(purchaseData);
-    
+
 }

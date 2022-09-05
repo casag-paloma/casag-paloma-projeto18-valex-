@@ -3,6 +3,6 @@ import { addPurchase } from "../controllers/purchaseController";
 
 const purchaseRouter = Router();
 
-purchaseRouter.post('/purchase', addPurchase);
+purchaseRouter.post('/purchase/:cardId', addPurchase);
 
 export default purchaseRouter;

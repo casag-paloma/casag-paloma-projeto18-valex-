@@ -1,0 +1,38 @@
+Projeto #18 - Valex
+
+rotas:
+
+/card
+.post:
+header {Authorization : APIKEY-api-key}
+body:{employeeId, type}
+> criação de um cartão para um colaborador feita por uma empresa que tenha uma chave API válida
+
+/card/:cardId
+.get
+>visualização do saldo e transações de um cartão
+
+.put
+body:{securityCode, password}
+> ativação do cartão feita pelo colaborador
+
+/card/:cardId/blocked
+.post
+body:{password}
+> bloqueio do cartão feito por um colaborador
+
+/card/:cardId/unblocked
+.post
+body:{password}
+> desbloqueio do cartão feito por um colaborador
+
+/recharge/:cardId
+.post:
+header {Authorization : APIKEY-api-key}
+body:{amount}
+> recarga do cartão de um colaborador feita por uma empresa com uma chave API válida
+
+/purchase/:cardId
+.post
+body:{password, businessId, amount}
+> compra do cartão feita por um colaborador em um dos estabelecimentos válidos

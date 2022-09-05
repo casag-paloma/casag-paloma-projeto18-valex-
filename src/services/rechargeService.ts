@@ -17,16 +17,13 @@ export async function getRecharges(cardId:number) {
 
 async function getRechargeArrayValues(rechargeData:[rechargeRepository.RechargeInsertData]) {
     const rechargeArrayValues = rechargeData.map(({amount}) => amount)
-    console.log(rechargeArrayValues);
     const rechargeValues = rechargeArrayValues.reduce(function(acc, cur) {
         return acc + cur;
     });
-    console.log(rechargeValues);
     return rechargeValues;
 }
 
 export async function getRechargeValues(rechargeData:any) {
-    console.log(rechargeData, rechargeData.length)
     if(rechargeData.length > 0){
         const rechargeValues = getRechargeArrayValues(rechargeData)
         return rechargeValues;

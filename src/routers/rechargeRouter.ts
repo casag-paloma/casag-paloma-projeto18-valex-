@@ -3,6 +3,6 @@ import { addRecharge } from "../controllers/rechargeController";
 
 const rechargeRouter = Router();
 
-rechargeRouter.post('/recharge', addRecharge);
+rechargeRouter.post('/recharge/:cardId', addRecharge);
 
 export default rechargeRouter;

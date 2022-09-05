@@ -13,8 +13,6 @@ import { PaymentInsertData } from "../repositories/paymentRepository";
 export async function verifyApiKey(apiKey:any) {
     
     const company = await companyRepository.findByApiKey(apiKey);
-    console.log(company)
-
     if(!company) throw {type: "error_not_found",
     message: `Could not find specified!`}
 
@@ -23,7 +21,6 @@ export async function verifyApiKey(apiKey:any) {
 export async function verifyEmployeeId(employeeId:number) {
     
     const employee = await employeeRepository.findById(employeeId);
-    console.log(employee)
 
     if(!employee) throw {type: "error_not_found",
     message: `Could not find specified!`}
@@ -34,7 +31,6 @@ export async function verifyEmployeeId(employeeId:number) {
 export async function verifyEmployeeIdAndType(employeeId:number, type:cardRepository.TransactionTypes) {
     
     const card = await cardRepository.findByTypeAndEmployeeId(type, employeeId);
-    console.log(card)
 
     if(card) throw {type: "error_conflict",
     message: `There is already a card cadastred!`}
@@ -48,7 +44,6 @@ function createCartHolderName(employeeFullName:string){
         else return name
     })
     const cardHolderName = arrWithoutMiddleNames.join(" "). toUpperCase();
-    console.log(employeeFullName, arr, arrWithOnlyPlusThanThreeLettersNames, arrWithoutMiddleNames, cardHolderName);
     return cardHolderName;
 }
 
@@ -60,7 +55,6 @@ function createExpDate(){
     const expYear = Number(year) + 5;
     const newDate = [month, expYear];
     const expirationDate = newDate.join('/');
-    console.log(dateToday, year, newDate, expirationDate);
     return expirationDate;
 
 }
@@ -68,7 +62,6 @@ function createExpDate(){
 function createCardCvc(){
     const cardCvc = faker.finance.creditCardCVV();
     const encryptedCvc = cryptr.encrypt(cardCvc);
-    console.log(cardCvc, encryptedCvc);
     return encryptedCvc;
 
 }
@@ -90,13 +83,10 @@ export async function generateCardInfo(employeeId:number, type:cardRepository.Tr
         isBlocked: true,
         type
     }
-    console.log(cardInfo);
-
     return cardInfo;
 }
 
 export async function createCard(cardInfo: cardRepository.CardInsertData) {
-    console.log(cardInfo);
     const card = await cardRepository.insert(cardInfo);
 }
 
@@ -117,8 +107,6 @@ export async function verifyExpirationDate(expirationDate:string) {
     const year = expirationDate.split('/')[1]    
     const expDate = new Date(`${month}/01/${year}`);
     
-    console.log(today, expDate, month, year, expirationDate)
-
     if (today > expDate) throw {
 		type: "error_bad_request",
 		message: `This card has expired!`
@@ -126,7 +114,6 @@ export async function verifyExpirationDate(expirationDate:string) {
 }
 
 export async function verifyCardActiveStatus(card: cardRepository.CardInsertData, doIwannaActive: boolean) {
-    console.log(card, card.password, doIwannaActive);
     if(doIwannaActive){
         if(!card.password) throw {type: "error_not_found",
         message: `This card is not active yet!`}
@@ -140,8 +127,6 @@ export async function verifySecurityCode(securityCode: number, encryptedCvc: str
     
     const decryptedSecurityCode = cryptr.decrypt(encryptedCvc);
     
-    console.log(securityCode, decryptedSecurityCode, encryptedCvc)
-
     if (Number(securityCode) != Number(decryptedSecurityCode)) throw {
 		type: "error_bad_request",
 		message: `invalid request!`
@@ -159,7 +144,6 @@ export async function activeCard(id:number, password:string) {
 }
 
 export async function verifyCardBlockedStatus(card: cardRepository.CardInsertData, doIwannaBlock: boolean) {
-    console.log(card, doIwannaBlock);
     if(doIwannaBlock){
         if(card.isBlocked) throw {type: "error_conflict",
         message: `This card is already blocked!`}    
@@ -171,14 +155,12 @@ export async function verifyCardBlockedStatus(card: cardRepository.CardInsertDat
 }
 
 export async function verifyIfCardIsBlocked(card: cardRepository.CardInsertData) {
-    console.log(card);
     if(card.isBlocked) throw {type: "error_conflict",
         message: `This card is blocked!`}    
 }
 
 
 export async function verifyPassword(password: string, encryptedPassword: any) {  
-    console.log(password, encryptedPassword);
     if (!bcrypt.compareSync(password, encryptedPassword)) throw {
 		type: "error_bad_request",
 		message: `invalid request!`
@@ -196,8 +178,7 @@ export async function getBalance(rechargeValues:number, purchaseValues:number) {
     
 }
 export async function generateBalanceResponse(balance:number, rechargeData: any, purchaseData:any) {
-    console.log('aqui')
-    console.log(balance, rechargeData, purchaseData);
+   
     const result = {
         balance,
         transactions: purchaseData,
