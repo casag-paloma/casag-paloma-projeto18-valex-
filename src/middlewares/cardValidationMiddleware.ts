@@ -1,5 +1,5 @@
-import { findByApiKey } from "../repositories/companyRepository";
-import cardShema from "../schemas/cardSchema";
+import cardSchema from "../schemas/cardSchema";
+import activeCardSchema from "../schemas/activeCardSchema";
 
 function notFoundError(entity:string) {
 	return {
@@ -8,19 +8,10 @@ function notFoundError(entity:string) {
 	};
 }
 
-export async function verifyApiKey(apiKey:any) {
-    
-    const company = await findByApiKey(apiKey);
-    console.log(company)
-
-    if(!company) throw {type: "error_not_found",
-    message: `Could not find specified!`}
-
-}
 
 export async function validadeCardType(type:string) {
     
-    const {error} =  cardShema.validate(type);
+    const {error} =  cardSchema.validate(type);
     console.log(error)
     if(error) throw {
 		type: "error_bad_request",
@@ -29,7 +20,13 @@ export async function validadeCardType(type:string) {
 
 }
 
+export async function validadeActiveCard(data:{}) {
+    
+    const {error} =  activeCardSchema.validate(data);
+    console.log(error)
+    if(error) throw {
+		type: "error_bad_request",
+		message: `invalid request!`
+	} 
 
-export default{
-    verifyApiKey
 }

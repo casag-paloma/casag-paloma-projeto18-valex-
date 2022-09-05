@@ -118,6 +118,18 @@ export async function insert(cardData: CardInsertData) {
 //);
 //}
 
+export async function updatePassword(id: number, password: string) {
+await connection.query(
+  `
+  UPDATE cards
+    SET password ='${password}'
+  WHERE $1=id
+`,
+  [id]
+);
+}
+
+
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);
 }
@@ -129,5 +141,6 @@ export default{
   findByCardDetails,
   insert,
   //update,
+  updatePassword,
   remove
 }

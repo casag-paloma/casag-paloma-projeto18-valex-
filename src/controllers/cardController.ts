@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { connection } from "../config/database";
 import * as cardMiddleware from "../middlewares/cardValidationMiddleware"
 import * as cardService from "../services/cardService"
 
@@ -21,6 +20,23 @@ export async function createCard(req:Request, res: Response) {
     const cardInfo = await cardService.generateCardInfo(employeeId, type, employeeFullName);
     await cardService.createCard(cardInfo);
 
-    res.sendStatus(201);
+    res.status(201).send('aqui');
+    
+}
+
+export async function activateCard(req:Request, res: Response) {
+    const data = req.body;
+
+    await cardMiddleware.validadeActiveCard(data);
+    const {id, securityCode, password} = data;
+    
+    const card = await cardService.verifyCardById(id);
+    await cardService.verifyExpirationDate(card.expirationDate);
+    await cardService.verifyCardActived(card);
+    await cardService.verifySecurityCode(securityCode, card.securityCode)
+    
+    const encryptPassword = await cardService.encryptPassword(password);
+    await cardService.activeCard(id, encryptPassword);
+    res.sendStatus(200);
     
 }

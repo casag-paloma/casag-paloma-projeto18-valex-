@@ -6,6 +6,7 @@ import { faker } from '@faker-js/faker';
 import dayjs from 'dayjs'
 import Cryptr from 'cryptr';
 const cryptr = new Cryptr('myTotallySecretKey');
+import bcrypt from "bcrypt";
 
 export async function verifyApiKey(apiKey:any) {
     
@@ -36,7 +37,6 @@ export async function verifyEmployeeIdAndType(employeeId:number, type:cardReposi
     if(card) throw {type: "error_conflict",
     message: `There is already a card cadastred!`}
 }
-
 
 function createCartHolderName(employeeFullName:string){
     const arr = employeeFullName.split(' ');
@@ -71,7 +71,6 @@ function createCardCvc(){
 
 }
 
-
 export async function generateCardInfo(employeeId:number, type:cardRepository.TransactionTypes, employeeFullName:string) {
     
     const cardNumber = faker.finance.creditCardNumber();
@@ -96,5 +95,58 @@ export async function generateCardInfo(employeeId:number, type:cardRepository.Tr
 
 export async function createCard(cardInfo: cardRepository.CardInsertData) {
     console.log(cardInfo);
-    await cardRepository.insert(cardInfo);
+    const card = await cardRepository.insert(cardInfo);
+}
+
+export async function verifyCardById(id:number) {
+    
+    const card = await cardRepository.findById(id)
+
+    if(!card) throw {type: "error_not_found",
+    message: `Could not find specified!`}
+
+    return card;
+};
+
+export async function verifyExpirationDate(expirationDate:string) {
+    
+    const today = new Date();
+    const month = expirationDate.split('/')[0] 
+    const year = expirationDate.split('/')[1]    
+    const expDate = new Date(`${month}/01/${year}`);
+    
+    console.log(today, expDate, month, year, expirationDate)
+
+    if (today > expDate) throw {
+		type: "error_bad_request",
+		message: `invalid request!`
+	}
+}
+
+export async function verifyCardActived(card: cardRepository.CardInsertData) {
+    console.log(card, card.password);
+    if(card.password) throw {type: "error_conflict",
+    message: `There card is already active!`}
+}
+
+export async function verifySecurityCode(securityCode: number, encryptedCvc: string) {
+    
+    const decryptedSecurityCode = cryptr.decrypt(encryptedCvc);
+    
+    console.log(securityCode, decryptedSecurityCode, encryptedCvc)
+
+    if (Number(securityCode) != Number(decryptedSecurityCode)) throw {
+		type: "error_bad_request",
+		message: `invalid request!`
+	}
+};
+
+export async function encryptPassword(password:string) {
+const encryptPassword = bcrypt.hashSync(password, 10);
+return encryptPassword;
+    
+}
+
+export async function activeCard(id:number, password:string) {
+    await cardRepository.updatePassword(id,password)
 }
