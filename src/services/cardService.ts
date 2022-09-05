@@ -151,10 +151,16 @@ export async function activeCard(id:number, password:string) {
     await cardRepository.updatePassword(id,password)
 }
 
-export async function verifyCardBlockedStatus(card: cardRepository.CardInsertData) {
-    console.log(card);
-    if(card.isBlocked) throw {type: "error_conflict",
-    message: `This card is already blocked!`}
+export async function verifyCardBlockedStatus(card: cardRepository.CardInsertData, doIwannaBlock: boolean) {
+    console.log(card, doIwannaBlock);
+    if(doIwannaBlock){
+        if(card.isBlocked) throw {type: "error_conflict",
+        message: `This card is already blocked!`}    
+    }
+    else{
+        if(!card.isBlocked) throw {type: "error_conflict",
+        message: `This card is already unblocked!`}    
+    }
 }
 
 export async function verifyPassword(password: string, encryptedPassword: any) {  
@@ -165,6 +171,6 @@ export async function verifyPassword(password: string, encryptedPassword: any) {
 	}
 };
 
-export async function blockCard(id:number, isBlocked:boolean) {
+export async function changeBlockStatusCard(id:number, isBlocked:boolean) {
     await cardRepository.updateBlockedStatus(id,isBlocked);
 }

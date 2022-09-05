@@ -41,16 +41,28 @@ export async function activateCard(req:Request, res: Response) {
     
 }
 
+export async function verificationBlockStatusFunctions(data:any, doIwannaBlock:boolean) {
+
+    await cardMiddleware.validadeBlockStatusCard(data);
+    const card = await cardService.verifyCardById(data.id);
+    await cardService.verifyExpirationDate(card.expirationDate);
+    await cardService.verifyCardBlockedStatus(card, doIwannaBlock);
+    await cardService.verifyPassword(data.password, card.password)
+    
+}
+
 export async function blockCard(req:Request, res: Response){
     const data = req.body;
 
-    await cardMiddleware.validadeBlockStatusCard(data);
-    const {id, password} = data;
-    
-    const card = await cardService.verifyCardById(id);
-    await cardService.verifyExpirationDate(card.expirationDate);
-    await cardService.verifyCardBlockedStatus(card);
-    await cardService.verifyPassword(password, card.password)
-    await cardService.blockCard(id,true);
+    await verificationBlockStatusFunctions(data,true);
+    await cardService.changeBlockStatusCard(data.id,true);
+    res.sendStatus(200)
+}
+
+export async function unblockCard(req:Request, res: Response){
+    const data = req.body;
+
+    await verificationBlockStatusFunctions(data,false);
+    await cardService.changeBlockStatusCard(data.id,false);
     res.sendStatus(200)
 }
