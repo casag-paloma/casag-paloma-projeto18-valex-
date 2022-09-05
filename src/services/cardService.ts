@@ -7,6 +7,8 @@ import dayjs from 'dayjs'
 import Cryptr from 'cryptr';
 const cryptr = new Cryptr('myTotallySecretKey');
 import bcrypt from "bcrypt";
+import { RechargeInsertData } from "../repositories/rechargeRepository";
+import { PaymentInsertData } from "../repositories/paymentRepository";
 
 export async function verifyApiKey(apiKey:any) {
     
@@ -168,6 +170,13 @@ export async function verifyCardBlockedStatus(card: cardRepository.CardInsertDat
     }
 }
 
+export async function verifyIfCardIsBlocked(card: cardRepository.CardInsertData) {
+    console.log(card);
+    if(card.isBlocked) throw {type: "error_conflict",
+        message: `This card is blocked!`}    
+}
+
+
 export async function verifyPassword(password: string, encryptedPassword: any) {  
     console.log(password, encryptedPassword);
     if (!bcrypt.compareSync(password, encryptedPassword)) throw {
@@ -178,4 +187,22 @@ export async function verifyPassword(password: string, encryptedPassword: any) {
 
 export async function changeBlockStatusCard(id:number, isBlocked:boolean) {
     await cardRepository.updateBlockedStatus(id,isBlocked);
+}
+
+
+export async function getBalance(rechargeValues:number, purchaseValues:number) {
+    const balance = rechargeValues - purchaseValues;
+    return balance;
+    
+}
+export async function generateBalanceResponse(balance:number, rechargeData: any, purchaseData:any) {
+    console.log('aqui')
+    console.log(balance, rechargeData, purchaseData);
+    const result = {
+        balance,
+        transactions: purchaseData,
+        recharges: rechargeData
+    }
+    return result;
+
 }

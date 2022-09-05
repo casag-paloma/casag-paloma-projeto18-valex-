@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
-import * as cardMiddleware from "../middlewares/cardValidationMiddleware"
-import * as cardService from "../services/cardService"
+import * as cardMiddleware from "../middlewares/cardValidationMiddleware";
+import * as cardService from "../services/cardService";
+import * as purchaseService from "../services/purchaseService";
+import * as rechargeService from "../services/rechargeService";
 
 export async function createCard(req:Request, res: Response) {
 
@@ -65,4 +67,21 @@ export async function unblockCard(req:Request, res: Response){
     await verificationBlockStatusFunctions(data,false);
     await cardService.changeBlockStatusCard(data.id,false);
     res.sendStatus(200)
+}
+
+export async function getBalance(req:Request, res: Response) {
+
+    const {cardId} = req.params;
+    await cardMiddleware.validateCardId(cardId);
+    const numberCardId = Number(cardId);
+    const rechargeData = await rechargeService.getRecharges(numberCardId);
+    const purchaseData = await purchaseService.getPurchases(numberCardId);
+    console.log(rechargeData, purchaseData)
+    const rechargeValues = await rechargeService.getRechargeValues(rechargeData);
+    const purchaseValues = await purchaseService.getPurchaseValues(purchaseData);
+    console.log(rechargeValues, purchaseValues);
+    const balance = await cardService.getBalance(rechargeValues,purchaseValues);
+    const result = await cardService.generateBalanceResponse(balance, rechargeData, purchaseData);
+
+    res.status(200).send(result);
 }
