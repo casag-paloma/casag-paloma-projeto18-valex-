@@ -19,8 +19,6 @@ export async function addPurchase(req:Request, res:Response) {
     const business = await purchaseService.verifyBusinessById(businessId);
     
     await purchaseService.verifyBusinessType(business.type, card.type);
-    
-
 
     //await rechargeService.addRecharge(data.cardId, data.amount);
 

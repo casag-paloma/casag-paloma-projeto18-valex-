@@ -7,6 +7,8 @@ import dayjs from 'dayjs'
 import Cryptr from 'cryptr';
 const cryptr = new Cryptr('myTotallySecretKey');
 import bcrypt from "bcrypt";
+import { RechargeInsertData } from "../repositories/rechargeRepository";
+import { PaymentInsertData } from "../repositories/paymentRepository";
 
 export async function verifyApiKey(apiKey:any) {
     
@@ -185,4 +187,22 @@ export async function verifyPassword(password: string, encryptedPassword: any) {
 
 export async function changeBlockStatusCard(id:number, isBlocked:boolean) {
     await cardRepository.updateBlockedStatus(id,isBlocked);
+}
+
+
+export async function getBalance(rechargeValues:number, purchaseValues:number) {
+    const balance = rechargeValues - purchaseValues;
+    return balance;
+    
+}
+export async function generateBalanceResponse(balance:number, rechargeData: any, purchaseData:any) {
+    console.log('aqui')
+    console.log(balance, rechargeData, purchaseData);
+    const result = {
+        balance,
+        transactions: purchaseData,
+        recharges: rechargeData
+    }
+    return result;
+
 }

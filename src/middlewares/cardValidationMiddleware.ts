@@ -1,6 +1,7 @@
 import cardSchema from "../schemas/cardSchema";
 import activeCardSchema from "../schemas/activeCardSchema";
 import blockCardSchema from "../schemas/blockCardSchema";
+import { number } from "joi";
 
 function notFoundError(entity:string) {
 	return {
@@ -30,6 +31,15 @@ export async function validadeActiveCard(data:{}) {
 		message: `invalid request!`
 	} 
 
+}
+
+export async function validateCardId(id:string) {
+	const cardId = Number(id)
+
+	if(isNaN(cardId)) throw {
+		type: "error_bad_request",
+		message: `invalid request!`
+	}
 }
 
 
