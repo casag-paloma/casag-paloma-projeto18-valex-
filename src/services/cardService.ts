@@ -168,6 +168,13 @@ export async function verifyCardBlockedStatus(card: cardRepository.CardInsertDat
     }
 }
 
+export async function verifyIfCardIsBlocked(card: cardRepository.CardInsertData) {
+    console.log(card);
+    if(card.isBlocked) throw {type: "error_conflict",
+        message: `This card is blocked!`}    
+}
+
+
 export async function verifyPassword(password: string, encryptedPassword: any) {  
     console.log(password, encryptedPassword);
     if (!bcrypt.compareSync(password, encryptedPassword)) throw {
