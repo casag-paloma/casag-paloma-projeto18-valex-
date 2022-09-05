@@ -1,7 +1,9 @@
 import { Router } from "express";
-import battleRouter from "./cardRouter";
+import cardRouter from "./cardRouter";
+import rechargeRouter from "./rechargeRouter";
 
 const router = Router();
-router.use(battleRouter);
+router.use(cardRouter);
+router.use(rechargeRouter);
 
 export default router;

@@ -119,14 +119,19 @@ export async function verifyExpirationDate(expirationDate:string) {
 
     if (today > expDate) throw {
 		type: "error_bad_request",
-		message: `invalid request!`
+		message: `This card has expired!`
 	}
 }
 
-export async function verifyCardActived(card: cardRepository.CardInsertData) {
-    console.log(card, card.password);
-    if(card.password) throw {type: "error_conflict",
-    message: `There card is already active!`}
+export async function verifyCardActiveStatus(card: cardRepository.CardInsertData, doIwannaActive: boolean) {
+    console.log(card, card.password, doIwannaActive);
+    if(doIwannaActive){
+        if(!card.password) throw {type: "error_not_found",
+        message: `This card is not active yet!`}
+    } else{
+        if(card.password) throw {type: "error_conflict",
+        message: `This card is already active!`}
+    }
 }
 
 export async function verifySecurityCode(securityCode: number, encryptedCvc: string) {

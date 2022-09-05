@@ -32,7 +32,7 @@ export async function activateCard(req:Request, res: Response) {
     
     const card = await cardService.verifyCardById(id);
     await cardService.verifyExpirationDate(card.expirationDate);
-    await cardService.verifyCardActived(card);
+    await cardService.verifyCardActiveStatus(card, false);
     await cardService.verifySecurityCode(securityCode, card.securityCode)
     
     const encryptPassword = await cardService.encryptPassword(password);
